@@ -6,22 +6,23 @@
         Weighted
       </div>
     </div>
-    <button class="close-btn" @click="delteSemister()"><i class="material-icons">close</i> </button>
-    <template v-for="cource in cources">
-      <semister-cource :key="cource.id" :length="cources.length" :cource="cource" v-on:delete="deleteCource" v-on:greadValue="greadValue" ></semister-cource>
+    <button class="close-btn" @click="deleteSemister(semister.id)"><i class="material-icons">close</i> </button>
+    <template v-for="cource in semister.cources">
+      <semister-cource :key="cource.id" :cource="cource" :semister_id="semister.id" :length="semister.cources.length"></semister-cource>
     </template>
     <div class="footer">
       <div class="gread-point">
         <p>Semester {{semister.id}} GPA: </p>
-        <span class="gread-value">&nbsp;0.00</span>
+        <span class="gread-value">&nbsp;{{ semister.gread }}</span>
       </div>
-      <button class="add-button" @click="addCource()" ><i class="material-icons">add</i>Add Cource</button> 
+      <button class="add-button" @click="addCource(semister.id)" ><i class="material-icons">add</i>Add Cource</button>
     </div>
     <div class="divider"></div>
   </div>
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex'
 import semister_cource from './semister_cource'
 
 export default {
@@ -29,27 +30,16 @@ export default {
   components: {
     'semister-cource': semister_cource
   },
-  data() {
-    return {
-      cources: [{id:1},{id:2},{id:3},{id:4}]
-    }
+  computed: {
+    ...mapGetters([
+      'semisterGread'
+    ])
   },
   methods: {
-    delteSemister: function() {
-      this.$emit('delete', this.semister.id)
-    },
-    addCource: function() {
-      let length = this.cources.length;
-      this.cources.push({ id: ++length })
-    },
-    deleteCource: function(id) {
-      this.cources = this.cources.filter(cource => cource.id!==id);
-      let xid = 1;
-      this.cources.forEach(cource => cource.id = xid++)
-    },
-    greadValue: function(val) {
-      alert(val)
-    }
+    ...mapActions([
+      'deleteSemister',
+      'addCource'
+    ])
   }
 }
 </script>
@@ -81,8 +71,11 @@ export default {
     font-weight 400
     .gread-point
       display flex
-      .gread-value
+      p
         font-weight 400
+      .gread-value
+        font-size 19px
+        font-weight 600
     .add-button  
       display inline-block
       margin-top 0
@@ -103,4 +96,8 @@ export default {
     position absolute 
     top 0.5em
     right 0em
+
+@media print
+  .weighted-container, .add-button, .close-btn
+    display none
 </style>

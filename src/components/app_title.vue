@@ -4,25 +4,27 @@
       <h1>Gread Calculator</h1>
       <p>Calculate your high school, college and cumulative GPA, check your grades and understand how the GPA scale works.</p>
     </div>
-    <div class="app-settings" @click="showSettingCard = !showSettingCard">
+    <div class="app-settings" @click="toggleSetting()">
       <i class="material-icons">settings</i>
     </div>
-    <div v-bind:class="{'settings-card': true, 'show-settings-card': showSettingCard, 'hide-settings-card': !showSettingCard}">
+    <div v-bind:class="{'settings-card': true, 'show-settings-card': app_setting, 'hide-settings-card': !app_setting}">
     </div>
   </div>
 </template>
 
 <script>
+import { mapState, mapActions } from 'vuex'
 export default {
-  data() {
-    return {
-      showSettingCard: false
-    }
-  },
+
   computed: {
-    title: function() {
-      return this.$store.state.title
-    }
+    ...mapState([
+      'app_setting'
+    ])
+  },
+  methods: {
+    ...mapActions([
+      'toggleSetting'
+    ])
   }
 }
 </script>
@@ -111,4 +113,12 @@ export default {
   .settings-card
     top 4em
     right 2em
+
+@media print
+  .app-bar
+    height 30px
+    min-height 30px !important
+    margin-bottom 1em
+  .app-bar-title p, .app-settings, .settings-card
+    display none
 </style>

@@ -1,84 +1,130 @@
 <template>
   <div class="cource-card">
-    <div class="cource-info ">
-      <div :class="{'cource-name':true, 'border-top': (cource.id==1), tlr: (cource.id==1), blr: (cource.id==length) }">
-        <input type="text" placeholder="Course name" />
+    <div class="cource-info">
+      <div
+        :class="{'cource-name':true, 'border-top': (cource.id==1), tlr: (cource.id==1), blr: (cource.id==length) }"
+      >
+        <input
+          @change="submitCourceInfo()"
+          v-model="cource_name"
+          type="text"
+          placeholder="Course name"
+        />
       </div>
       <div :class="{'cource-gread': true, 'border-top': (cource.id==1) }">
-        <select @change="onGreadValueChange($event)">
-          <option 
-          v-for="gread in greads" 
-          :key="(Math.random()*10000)"
-          :value="gread.value"
-          v-if="gread.name!=='Gread'"
-          >
-            {{gread.name}}
-          </option>
-          <option v-else selected="selected" value="" hidden="hidden">{{gread.name}}</option>
+        <select @change="submitCourceInfo()" v-model="cource_gread">
+          <template v-for="(gread,i) in greads">
+            <option :key="i" :value="gread.value" v-if="gread.name!=='Gread'">{{gread.name}}</option>
+            <option
+              :key="i"
+              v-if="gread.name=='Gread'"
+              selected="selected"
+              value
+              hidden="hidden"
+            >{{gread.name}}</option>
+          </template>
         </select>
-        <span class="material-icons expand-icon">expand_more</span>
       </div>
-      <div :class="{'cource-credit':true, 'border-top': (cource.id==1), trr: (cource.id==1), brr: (cource.id==length) }">
-        <input type="number" placeholder="Credits" />
+      <div
+        :class="{'cource-credit':true, 'border-top': (cource.id==1), trr: (cource.id==1), brr: (cource.id==length) }"
+      >
+        <input
+          @change="submitCourceInfo()"
+          v-model="cource_credit"
+          type="number"
+          placeholder="Credits"
+        />
       </div>
       <div class="cource-weight-container">
-        <div :class="{'cource-weight':true, 'border-top': (cource.id==1), tr: (cource.id==1), br: (cource.id==length) }">
-          <select >
-            <option 
-            v-for="weight in weights" 
-            :key="(Math.random()*10000)"
-            :value="weight.value"
-            v-if="weight.name!=='Gread'"
-            >
-              {{weight.name}}
-            </option>
-            <option v-else selected="selected" value="" hidden="hidden">{{weight.name}}</option>
+        <div
+          :class="{'cource-weight':true, 'border-top': (cource.id==1), tr: (cource.id==1), br: (cource.id==length) }"
+        >
+          <select @change="submitCourceInfo()" v-model="cource_weight">
+            <template v-for="(weight, i) in weights">
+              <option :key="i" :value="weight.value" v-if="weight.name!=='Weight'">{{weight.name}}</option>
+              <option
+                :key="i"
+                v-if="weight.name=='Weight'"
+                selected="selected"
+                value
+                hidden="hidden"
+              >{{weight.name}}</option>
+            </template>
           </select>
-          <span class="material-icons expand-icon">expand_more</span>
         </div>
       </div>
     </div>
 
     <div class="close-cource">
       <button class="close-btn">
-        <i class="material-icons" @click="deleteCource">close</i>
+        <i class="material-icons" @click="deleteCource({ id: cource.id, sid: sId})">close</i>
       </button>
     </div>
   </div>
 </template>
 
 <script>
+import { mapActions } from "vuex";
+
 export default {
-  props: ['cource', 'length'],
-  created() {
-  },
+  props: ["cource", "semister_id", "length"],
+  created() {},
   data() {
     return {
-      greads: [ 
-      {name: 'Gread', value: ''}, {name: 'A+', value: 'A'},
-      {name: 'A', value: 'A'}, {name: 'A-', value: 'A-'},
-      {name: 'B+', value: 'B+'}, {name: 'B', value: 'B' },
-      {name: 'B-', value: 'B-'}, {name: 'C+', value: 'C+'}, 
-      {name: 'C', value: 'C',}, {name: 'C-', value: 'C-'},
-      {name: 'D+', value: 'D+'},{name: 'D', value: 'D'},
-      {name: 'D-', value: 'D-'},{name: 'F', value: 'F' },],
+      greads: [
+        { name: "Gread", value: "", hide: true },
+        { name: "A+", value: "A" },
+        { name: "A", value: "A" },
+        { name: "A-", value: "A-" },
+        { name: "B+", value: "B+" },
+        { name: "B", value: "B" },
+        { name: "B-", value: "B-" },
+        { name: "C+", value: "C+" },
+        { name: "C", value: "C" },
+        { name: "C-", value: "C-" },
+        { name: "D+", value: "D+" },
+        { name: "D", value: "D" },
+        { name: "D-", value: "D-" },
+        { name: "F", value: "F" }
+      ],
       weights: [
-        {name: 'Regular', value: 'regular'},
-        {name: 'Honors' , value: 'honors'},
-        {name: 'AP / IB', value: 'ap/ib'},
-        {name: 'College', value: 'College'}
-      ]
-    }
+        { name: "Weight", value: "" },
+        { name: "Regular", value: "regular" },
+        { name: "Honors", value: "honors" },
+        { name: "AP / IB", value: "ap/ib" },
+        { name: "College", value: "College" }
+      ],
+      cource_name: "",
+      cource_gread: "",
+      cource_credit: "",
+      cource_weight: ""
+    };
   },
   methods: {
-    deleteCource: function() {
-      this.$emit('delete', this.cource.id);
-    },
-    onGreadValueChange: function(e) {
-      this.$emit('greadValue', e.target.value)
+    ...mapActions(["deleteCource"]),
+    submitCourceInfo: function() {
+      const courceName = this.cource_name;
+      const courceGread = this.cource_gread;
+      const courceCredit = this.cource_credit;
+      const courceWeight = this.cource_weight;
+
+      const courceInfo = {
+        courceName,
+        courceGread,
+        courceCredit,
+        courceWeight
+      };
+      const info = { courceInfo, sid: this.semister_id, cid: this.cource.id };
+      this.$store.dispatch("updateCourceInfo", info);
+      this.$store.dispatch("calculateSemisterGread", this.semister_id);
+    }
+  },
+  computed: {
+    sId() {
+      return this.semister_id;
     }
   }
-}
+};
 </script>
 
 <style lang="stylus" scoped>
@@ -135,7 +181,7 @@ export default {
   align-items center
 .close-btn
   position static
-  border-color #E0E2E6
+  border-color #D0D2D6
   color #E0E2E6
 
 input
@@ -178,20 +224,13 @@ select
   padding 0 10px
   font-size 1rem
   font-weight 400
-  color #B0B2B6 // #0D2451
+  color #B0B2B6
+  background url('../assets/img/dropdown.png') no-repeat 95% center
   appearance none
   &:selected
     color red
-.expand-icon
-  position absolute
-  top 0.7em
-  right 0.6em        
-  color #B0B2B6
-  user-select none
-  width 15px
-  height 15px
-  display flex
-  align-items center
-  justify-content center
-  font-weight 100
+
+@media print
+  .close-cource
+    display none
 </style>

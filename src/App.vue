@@ -15,7 +15,6 @@ export default {
     'app-title': apptitle,
     'calculator-container': calculator_container
   },
-
 }
 </script>
 
@@ -49,7 +48,6 @@ body
 
 
 
-
 // global components
 .add-button
   border 1px solid #1690ED
@@ -64,6 +62,7 @@ body
   margin-top 2em
   display flex
   justify-content center
+  align-items center
   font-weight 300
   outline-color rgba(0,0,0,0.1)
   outline none
